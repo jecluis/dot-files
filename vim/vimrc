@@ -1,0 +1,333 @@
+set nocompatible              " be iMproved, required
+filetype off                  " required
+
+
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+" " alternatively, pass a path where Vundle should install plugins
+" "call vundle#begin('~/some/path/here')
+
+" " let Vundle manage Vundle, required
+Plugin 'gmarik/Vundle.vim'
+Plugin 'nathanaelkane/vim-indent-guides'
+"- L9 is a vim-script library
+Plugin 'L9'
+
+"- theme / colorscheme
+Plugin 'nanotech/jellybeans.vim'
+
+"vim usage
+"- vim-airline is for the status bar
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
+"- command-t is for file navigation
+Plugin 'Command-T'
+"- sparkup is for html shenanigans
+
+"Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
+"Plugin 'godlygeek/tabular'
+"Plugin 'ide'
+"Plugin 'ScrollColors'
+
+"snippets
+"Plugin 'SirVer/ultisnips' "snippets creating fast workflows
+"Plugin 'honza/vim-snippets' "package for above
+
+"code and language checking
+Plugin 'LanguageTool'
+Plugin 'scrooloose/syntastic'
+
+"php
+"Plugin 'php-doc'
+"Plugin 'php.vim'
+"Plugin 'cake.vim'
+"Plugin 'spf13/PIV'
+
+"ruby
+"Plugin 'ruby.vim'
+
+"markdown
+"Plugin 'plasticboy/vim-markdown'
+
+"python
+Plugin 'Python-Syntax'
+Plugin 'hdima/python-syntax'
+
+"html
+"Plugin 'mattn/emmet-vim'
+
+"javascript
+"Plugin 'pangloss/vim-javascript'
+"Plugin 'javascript.vim'
+"Plugin 'ternjs/tern_for_vim'
+"Plugin 'heavenshell/vim-jsdoc'
+"Plugin 'jelera/vim-javascript-syntax'
+"Plugin 'othree/javascript-libraries-syntax.vim'
+
+"css
+"Plugin 'css3-syntax-plus'
+
+"git
+Plugin 'airblade/vim-gitgutter'
+Plugin 'tpope/vim-fugitive'
+Plugin 'bkad/CamelCaseMotion'
+
+"hg
+"Plugin 'sgur/vim-lazygutter'
+
+" " All of your Plugins must be added before the following line
+ call vundle#end()            " required
+ filetype plugin indent on    " required
+" " To ignore plugin indent changes, instead use:
+" "filetype plugin on
+" "
+" " Brief help
+" " :PluginList       - lists configured plugins
+" " :PluginInstall    - installs plugins; append `!` to update or just
+" :PluginUpdate
+" " :PluginSearch foo - searches for foo; append `!` to refresh local cache
+" " :PluginClean      - confirms removal of unused plugins; append `!` to
+" auto-approve removal
+" "
+" " see :h vundle for more details or wiki for FAQ
+" " Put your non-Plugin stuff after this line
+" .vimrc
+" See: http://vimdoc.sourceforge.net/htmldoc/options.html for details
+
+" For multi-byte character support (CJK support, for example):
+"set fileencodings=ucs-bom,utf-8,cp936,big5,euc-jp,euc-kr,gb18030,latin1
+
+set softtabstop=2   " Number of spaces that a <Tab> in the file counts for.
+
+set shiftwidth=2    " Number of spaces to use for each step of (auto)indent.
+set tabstop=8       " Number of spaces to use for each step of (auto)indent.
+
+set smarttab        " When on, a <Tab> in front of a line inserts blanks
+                    " according to 'shiftwidth'. 'tabstop' is used in other
+                    " places. A <BS> will delete a 'shiftwidth' worth of space
+                    " at the start of the line.
+
+set showcmd         " Show (partial) command in status line.
+
+set number          " Show line numbers.
+
+set showmatch       " When a bracket is inserted, briefly jump to the matching
+                    " one. The jump is only done if the match can be seen on the
+                    " screen. The time to show the match can be set with
+                    " 'matchtime'.
+
+set hlsearch        " When there is a previous search pattern, highlight all
+                    " its matches.
+
+set incsearch       " While typing a search command, show immediately where the
+                    " so far typed pattern matches.
+
+set ignorecase      " Ignore case in search patterns.
+
+set smartcase       " Override the 'ignorecase' option if the search pattern
+                    " contains upper case characters.
+
+set backspace=2     " Influences the working of <BS>, <Del>, CTRL-W
+                    " and CTRL-U in Insert mode. This is a list of items,
+                    " separated by commas. Each item allows a way to backspace
+                    " over something.
+
+set autoindent      " Copy indent from current line when starting a new line
+                    " (typing <CR> in Insert mode or when using the "o" or "O"
+                    " command).
+let g:indent_guides_enable_on_vim_startup=1
+
+set formatoptions=c,q,r,t " This is a sequence of letters which describes how
+                    " automatic formatting is to be done.
+                    "
+                    " letter    meaning when present in 'formatoptions'
+                    " ------    ---------------------------------------
+                    " c         Auto-wrap comments using textwidth, inserting
+                    "           the current comment leader automatically.
+                    " q         Allow formatting of comments with "gq".
+                    " r         Automatically insert the current comment leader
+                    "           after hitting <Enter> in Insert mode.
+                    " t         Auto-wrap text using textwidth (does not apply
+                    "           to comments)
+
+set ruler           " Show the line and column number of the cursor position,
+                    " separated by a comma.
+
+set textwidth=78
+
+
+"Change leader from \ to , for
+" ,t - open commandT - to quickly search directory tree
+" ,e - similar to e but for camel case
+" ,w - similar to w but for camel case
+" ,b - similar to b but for camel case
+" ,s -> saves the current file
+" ,l -> on/off us spellcheck
+" ,g -> on/off german spellcheck
+" ,h -> enable the java gramma english spellchecking tool (to disable it '-h')
+" ,p -> on/off paste mode
+let mapleader = ","
+
+syntax on
+set fdm=indent
+set splitbelow
+set splitright
+set history=1000
+set tabpagemax=20
+set scrolloff=7
+set laststatus=2
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_theme='serene'
+
+" set t_Co=16
+set t_Co=256
+set regexpengine=1
+set wildmenu
+set background=dark " When set to "dark", Vim will try to use colors that look
+                    " good on a dark background. When set to "light", Vim will
+                    " try to use colors that look good on a light background.
+                    " Any other value is illegal.
+colorscheme jellybeans
+
+" set cursorline
+
+" Return to last edit position when opening files (You want this!)
+autocmd BufReadPost *
+     \ if line("'\"") > 0 && line("'\"") <= line("$") |
+     \   exe "normal! g`\"" |
+     \ endif
+" Remember info about open buffers on close
+set viminfo^=%
+
+let &t_SI = "\<Esc>]12;green\x7"
+let &t_EI = "\<Esc>]12;red\x7"
+
+let g:jsdoc_allow_input_prompt=1 "default: 0 Allow prompt for interactive input.
+"let g:jsdoc_input_description=1 "default: 1 Prompt for a function description
+"let g:jsdoc_additional_descriptions=1 "default: 0 Prompt for a value for @name, add it to the JSDoc block comment along with the @function tag.
+"let g:jsdoc_return=1 "default: 1 Add the @return tag.
+"let g:jsdoc_return_type=1 "default: 1 Prompt for and add a type for the aforementioned @return tag.
+"let g:jsdoc_return_description=1 "default: 1 Prompt for and add a description for the @return tag.
+"let g:jsdoc_default_mapping=1 "default: 1 Set value to 0 to turn off default mapping of :JsDoc
+"let g:jsdoc_access_descriptions=1 "default: 0 Set value to 1 to turn on access tags like @access <private|public> Set value to 2 to turn on access tags like @<private|public>
+let g:jsdoc_underscore_private=1 "default: 0 Set value to 1 to turn on detecting underscore starting functions as private convention
+"let g:jsdoc_allow_shorthand=1 "default: 0 Set value to 1 to allow ECMAScript6 shorthand syntax.
+
+set list
+set listchars=tab:\|⋅,trail:⋅,extends:>
+
+
+autocmd FileType cpp,c,python,conf,gitcommit,json,markdown,rst,sh,yaml let w:longlinehl = matchadd('ErrorMsg', '.\%>80v', 0)
+"let w:longlinehl = matchadd('ErrorMsg', '.\%>80v', 0)
+"let w:longlinehl = matchadd('ErrorMsg', ' [(;]', 0)
+
+""test= + - * += -=
+"let w:longlinehl = matchadd('ErrorMsg', '[^ ]==', 0)
+"let w:longlinehl = matchadd('ErrorMsg', '[^= ]=', 0)
+"let w:longlinehl = matchadd('ErrorMsg', '=[^>= ]', 0)
+"let w:longlinehl = matchadd('ErrorMsg', '==[^ ]', 0)
+"let w:longlinehl = matchadd('ErrorMsg', ') {', 0)
+
+"nnoremap ,w :call TrimWhiteSpace() <CR> :retab! <CR> :w <CR> :e % <CR>
+"nnoremap ,t :call TrimWhiteSpace() <CR>
+nmap <c-k> ]s
+nmap <c-l> 1z=
+nmap <leader>s :w <CR>
+nmap <leader>y "+y
+nmap <leader>l :setlocal spell! spelllang=en_us <CR>
+nmap <leader>g :setlocal spell! spelllang=de <CR>
+nmap <leader>h :LanguageToolCheck <CR>
+nmap -h :LanguageToolClear <CR>
+nmap <leader>p :set paste! <CR>
+
+"au BufWrite * :call TrimWhiteSpace()
+
+set statusline=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 2
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+"let g:syntastic_javascript_checkers = ['eslint', 'jscs', 'jshint']
+
+let g:syntastic_javascript_checkers = ['jscs', 'jshint', 'eslint']
+"let g:syntastic_javascript_checkers = ['eslint']
+command! CheckFE :let g:syntastic_javascript_checkers = ['jscs', 'jshint', 'eslint']
+command! CheckE2E :let g:syntastic_javascript_checkers = ['eslint']
+
+let g:syntastic_python_checkers = ['pep8', 'python']
+let g:syntastic_html_checkers = ['jshint']
+
+let g:syntastic_php_checkers = ['php', 'phplint']
+let g:syntastic_enable_perl_checker = 1
+let g:syntastic_perl_checkers = ['perl', 'podchecker']
+
+
+" Removes trailing spaces
+function! TrimWhiteSpace()
+  %s/\s*$//
+  ''
+:endfunction
+
+set expandtab "use spaces not tabs
+
+set autoread
+
+"au CursorHold * checktime
+"au CursorHoldI * checktime
+au CursorMoved *.md checktime
+au CursorMoved *.php checktime
+au CursorMoved *.js checktime
+au CursorMoved *.py checktime
+au CursorMoved *.csv checktime
+"au CursorMovedI * checktime
+augroup myvimrc
+    au!
+    au BufWritePost .vimrc,_vimrc,vimrc,.gvimrc,_gvimrc,gvimrc so $MYVIMRC | if has('gui_running') | so $MYGVIMRC | endif
+augroup END
+
+let g:languagetool_jar='$HOME/apps/LanguageTool-2.9/languagetool-commandline.jar'
+let g:languagetool_disable_rules = 'WHITESPACE_RULE,EN_QUOTES,MORFOLOGIK_RULE_EN_US,EN_A_VS_AN,I_LOWERCASE'
+let python_highlight_all = 1
+let g:CommandTMaxFiles=30000
+
+set expandtab
+filetype plugin on
+filetype plugin indent on
+autocmd Filetype python setlocal tabstop=4 shiftwidth=4
+
+autocmd FileType python set omnifunc=pythoncomplete#Complete
+autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
+autocmd FileType css set omnifunc=csscomplete#CompleteCSS
+autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
+autocmd FileType php set omnifunc=phpcomplete#CompletePHP
+autocmd FileType c set omnifunc=ccomplete#Complete
+
+set colorcolumn=80
+
+function! IsCephRepo()
+  let is_ceph_repo = system("git remote -v show | grep -q 'ceph.git'")
+  return v:shell_error == 0
+endfunction
+
+function! SetupCephStyle_cpp()
+"  let is_ceph_repo = system("git remote -v show | grep -q 'ceph.git'")
+"  let is_ceph_repo = v:shell_error
+  if IsCephRepo()
+    setlocal ts=8 sw=2 noexpandtab smarttab
+  endif
+endfunction
+
+function! SetupCephStyle_sh()
+  if IsCephRepo()
+    setlocal ts=4 sw=4 noexpandtab nosmarttab
+  endif
+endfunction
+
+autocmd FileType c,cpp call SetupCephStyle_cpp()
+autocmd FileType sh call SetupCephStyle_sh()
+
+

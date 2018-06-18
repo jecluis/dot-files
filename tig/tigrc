@@ -1,0 +1,4 @@
+bind stage C !git commit -s
+bind status C !git commit -s
+bind main C ?git cherry-pick -x %(commit)
+bind main B !git rebase -i %(commit)

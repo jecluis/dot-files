@@ -153,10 +153,37 @@ setup_tig() {
   return 0
 }
 
+setup_ceph() {
+  cat <<EOF
+Not doing much; in the future would be nice if this also set up a basic layout
+for a ceph repo, basic dependencies and what not.
+
+EOF
+
+  cmake_script=local.do_cmake.sh
+  echo "set up local ccache script at ${HOME}/bin"
+  [[ ! -e "${HOME}/bin" ]] && mkdir ${HOME}/bin
+  if [[ -e "${HOME}/bin/${cmake_script}" ]]; then
+    sha_a=$(sha256sum ${cwd}/ceph/${cmake_script} | cut -f1 -d' ')
+    sha_b=$(sha256sum ${HOME}/bin/${cmake_script})
+
+    if [[ "${sha_a}" != "${sha_b}" ]]; then
+      for fn in $(ls -r ${HOME}/bin/${cmake_script}*); do
+        echo "moving $fn to ${fn}.old"
+        mv $fn $fn.old
+      done
+      ln -fs ${cwd}/ceph/${cmake_script} ${HOME}/bin/${cmake_script}
+    fi
+  else
+    ln -fs ${cwd}/ceph/${cmake_script} ${HOME}/bin/${cmake_script}
+  fi
+}
+
 do_vim=0
 do_ssh=0
 do_zsh=0
 do_tig=0
+do_ceph=0
 
 set_do_all() {
   do_vim=1
@@ -169,13 +196,14 @@ while [[ $# -gt 0 ]]; do
 
   case $1 in
     -h|--help|help)
-      echo "usage: $0 [vim|ssh|zsh|tig]"
+      echo "usage: $0 [vim|ssh|zsh|tig|ceph]"
       exit 0
       ;;
     vim) do_vim=1 ;;
     ssh) do_ssh=1 ;;
     zsh) do_zsh=1 ;;
     tig) do_tig=1 ;;
+    ceph) do_ceph=1 ;;
     *)
       error "unrecognized option '$1'"
       exit 1
@@ -185,7 +213,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ $do_vim -eq 0 ]] && [[ $do_ssh -eq 0 ]] &&
-   [[ $do_zsh -eq 0 ]] && [[ $do_tig -eq 0 ]]; then
+   [[ $do_zsh -eq 0 ]] && [[ $do_tig -eq 0 ]] &&
+   [[ $do_ceph -eq 0 ]]; then
   set_do_all
 fi
 
@@ -204,4 +233,8 @@ fi
 
 if [[ $do_tig -eq 1 ]]; then
   setup_tig
+fi
+
+if [[ $do_ceph -eq 1 ]]; then
+  setup_ceph
 fi

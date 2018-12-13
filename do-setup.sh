@@ -184,7 +184,7 @@ for a ceph repo, basic dependencies and what not.
 
 EOF
 
-  scripts="local.do_cmake.sh ceph-make"
+  scripts="local.do_cmake.sh ceph-make ceph-vstart-kill"
   for s in $scripts; do
     echo "installing script ${s}"
     install_script ${cwd}/ceph/${s} ${s} || \

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+me=$(basename $0)
+#echo "> $me"
+
+for i in $(ps -eo pid,command | grep -v "$me\|grep" | grep 'ceph\|radosgw' | \
+		   sed -e 's/^ \+//' | cut -f1 -d' '); do
+#	echo ">> $i"
+
+	echo "kill '$(ps -o comm -p $i | grep 'ceph\|radosgw')' pid $i"
+	kill -9 $i
+done

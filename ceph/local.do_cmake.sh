@@ -73,15 +73,14 @@ if $do_keep; then
   echo "kept date epoch $src_date_epoch in $HOME/.ccache-kept-date"
 fi
 
-export SOURCE_DATE_EPOCH=$src_date_epoch
-export BUILD_DATE=$bld_date
-
 if $do_keep; then
 cat >> $HOME/.ccache-kept-exports << EOF
-SOURCE_DATE_EPOCH=$src_date_epoch
-BUILD_DATE=$bld_date
+export SOURCE_DATE_EPOCH=$src_date_epoch
+export BUILD_DATE=$bld_date
 EOF
 fi
+
+source $HOME/.ccache-kept-exports
 
 extra_opts="-DENABLE_GIT_VERSION=no"
 $do_commits && extra_opts="$extra_opts -DENABLE_GIT_VERSION=yes"

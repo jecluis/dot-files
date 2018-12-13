@@ -153,6 +153,30 @@ setup_tig() {
   return 0
 }
 
+install_script() {
+  src=$1
+  name=$2
+
+  bin_dir=${HOME}/bin
+  dst=${bin_dir}/${name}
+
+  [[ ! -e "$bin_dir" ]] && mkdir $bin_dir
+  if [[ -e "$dst" ]]; then
+    sha_a=$(sha256sum ${src} | cut -f1 -d' ')
+    sha_b=$(sha256sum ${dst} | cut -f1 -d ' ')
+
+    if [[ "${sha_a}" != "${sha_b}" ]]; then
+      for fn in $(ls -r ${dst}*); do
+        echo "moving $fn to ${fn}.old"
+        mv $fn $fn.old
+      done
+      ln -fs ${src} ${dst}
+    fi
+  else
+    ln -fs ${src} ${dst}
+  fi
+}
+
 setup_ceph() {
   cat <<EOF
 Not doing much; in the future would be nice if this also set up a basic layout
@@ -160,23 +184,12 @@ for a ceph repo, basic dependencies and what not.
 
 EOF
 
-  cmake_script=local.do_cmake.sh
-  echo "set up local ccache script at ${HOME}/bin"
-  [[ ! -e "${HOME}/bin" ]] && mkdir ${HOME}/bin
-  if [[ -e "${HOME}/bin/${cmake_script}" ]]; then
-    sha_a=$(sha256sum ${cwd}/ceph/${cmake_script} | cut -f1 -d' ')
-    sha_b=$(sha256sum ${HOME}/bin/${cmake_script})
-
-    if [[ "${sha_a}" != "${sha_b}" ]]; then
-      for fn in $(ls -r ${HOME}/bin/${cmake_script}*); do
-        echo "moving $fn to ${fn}.old"
-        mv $fn $fn.old
-      done
-      ln -fs ${cwd}/ceph/${cmake_script} ${HOME}/bin/${cmake_script}
-    fi
-  else
-    ln -fs ${cwd}/ceph/${cmake_script} ${HOME}/bin/${cmake_script}
-  fi
+  scripts="local.do_cmake.sh ceph-make"
+  for s in $scripts; do
+    echo "installing script ${s}"
+    install_script ${cwd}/ceph/${s} ${s} || \
+      ( echo "error installing script ${s}" ; exit 1 )
+  done
 }
 
 do_vim=0

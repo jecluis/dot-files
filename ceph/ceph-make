@@ -1,0 +1,16 @@
+#!/bin/bash
+
+if [[ "basename $(pwd)" != "build" ]]; then
+  echo "please run from build directory"
+  exit 1
+fi
+
+if [[ ! -e "Makefile" ]]; then
+  echo "Makefile not found; have you run cmake yet?"
+  echo "please consider running local.do_cmake.sh"
+  exit 1
+fi
+
+source $HOME/.ccache-kept-exports
+
+make "$@"

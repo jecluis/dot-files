@@ -177,6 +177,16 @@ install_script() {
   fi
 }
 
+check_installed_script_exists() {
+  name=$1
+
+  bin_dir=${HOME}/bin
+  path=${bin_dir}/${name}
+
+  ( [[ -e "${path}" ]] || [[ -L "${path}" ]] ) && return 0
+  return 1
+}
+
 setup_ceph() {
   cat <<EOF
 Not doing much; in the future would be nice if this also set up a basic layout
@@ -184,12 +194,21 @@ for a ceph repo, basic dependencies and what not.
 
 EOF
 
-  scripts="local.do_cmake.sh ceph-make ceph-vstart-kill"
+  scripts="ceph-do-cmake ceph-make ceph-vstart-kill"
   for s in $scripts; do
     echo "installing script ${s}"
     install_script ${cwd}/ceph/${s} ${s} || \
       ( echo "error installing script ${s}" ; exit 1 )
   done
+
+  if check_installed_script_exists "local.do_cmake.sh"; then
+    cat <<EOF
+
+warning: local.do_cmake.sh in bin directory. We changed it to be
+'ceph-do-cmake' instead, but we will not remove any existing files or
+symlinks. We advise you to do it; you may find it in your bin directory.
+EOF
+  fi
 }
 
 do_vim=0

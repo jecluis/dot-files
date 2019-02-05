@@ -13,4 +13,5 @@ fi
 
 source $HOME/.ccache-kept-exports
 
+echo "using BUILD_DATE=${BUILD_DATE}, SOURCE_DATE_EPOCH=${SOURCE_DATE_EPOCH}"
 make "$@"

@@ -2,14 +2,18 @@
 do_commits=false
 do_week=true
 do_day=false
-do_keep=false
+do_kept=false
+do_update_kept_date=false
 do_export=false
 
 while [[ $# -gt 0 ]]; do
 
   case $1 in
-    -k|--keep)
-      do_keep=true
+    -k|--use-kept-date)
+      do_kept=true
+      ;;
+    -u|--update-date)
+      do_update_kept_date=true
       ;;
     -w|--week)
       do_week=true
@@ -28,6 +32,7 @@ usage: $0 [options]
 
  options:
   -k | --keep            keep used date (may have kinks)
+  -e | --use-existing    use existing kept date
   -w | --week            build using a cache TTL of one week
   -d | --day             build using a cache TTL of one day
        --with-commits    build considering git commits (rebuilds often)
@@ -47,7 +52,7 @@ done
 base_date=""
 $do_week && base_date="-dmonday"
 
-if $do_keep ; then
+if $do_kept ; then
   if [[ ! -e "$HOME/.ccache-kept-date" ]]; then
     echo "no previously kept date, ignore -k; a new date will be saved."
   else
@@ -68,12 +73,12 @@ bld_date=$(date --utc --date=@${src_date_epoch} +%Y-%m-%d)
 echo "src date epoch: $src_date_epoch"
 echo "      bld date: $bld_date"
 
-if $do_keep; then
+if $do_update_kept_date; then
   echo $src_date_epoch > $HOME/.ccache-kept-date
   echo "kept date epoch $src_date_epoch in $HOME/.ccache-kept-date"
 fi
 
-if $do_keep; then
+if $do_update_kept_date; then
 cat >> $HOME/.ccache-kept-exports << EOF
 export SOURCE_DATE_EPOCH=$src_date_epoch
 export BUILD_DATE=$bld_date

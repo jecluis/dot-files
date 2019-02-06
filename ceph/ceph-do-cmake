@@ -1,3 +1,4 @@
+#!/bin/bash
 
 do_commits=false
 do_week=true
@@ -31,8 +32,8 @@ while [[ $# -gt 0 ]]; do
 usage: $0 [options]
 
  options:
-  -k | --keep            keep used date (may have kinks)
-  -e | --use-existing    use existing kept date
+  -k | --use-kept-date   keep used date (may have kinks)
+  -u | --update-date     use existing kept date
   -w | --week            build using a cache TTL of one week
   -d | --day             build using a cache TTL of one day
        --with-commits    build considering git commits (rebuilds often)

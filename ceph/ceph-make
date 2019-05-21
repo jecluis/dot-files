@@ -11,7 +11,14 @@ if [[ ! -e "Makefile" ]]; then
   exit 1
 fi
 
-source $HOME/.ccache-kept-exports
+CONF_PATH=${HOME}/.ceph_ccache/ceph_ccache.conf
+RELEASE_NAME=$(basename $(dirname $(pwd)) | cut -f2 -d'.')
+
+source ${CONF_PATH}
+source ${CEPH_CCACHE_EPOCHS_EXPORTS_FN}
+
+export CCACHE_DIR
+export CCACHE_BASEDIR
 
 echo "using BUILD_DATE=${BUILD_DATE}, SOURCE_DATE_EPOCH=${SOURCE_DATE_EPOCH}"
 make "$@"

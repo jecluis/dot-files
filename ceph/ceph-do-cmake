@@ -1,5 +1,12 @@
 #!/bin/bash
 
+CONF_PATH=${HOME}/.ceph_ccache/ceph_ccache.conf
+
+[[ ! -d ".git" ]] && \
+  echo "$(basename $0): requires being run in a git repository" && exit 1
+
+RELEASE_NAME=$(basename $(pwd) | cut -f2 -d'.')
+
 do_commits=false
 do_week=true
 do_day=false
@@ -10,6 +17,11 @@ do_export=false
 while [[ $# -gt 0 ]]; do
 
   case $1 in
+    -r|--release)
+      [[ -z "$2" ]] && \
+        >&2 echo "missing argument to option '$1'" && exit 1
+      RELEASE_NAME=$2
+      ;;
     -k|--use-kept-date)
       do_kept=true
       ;;
@@ -27,25 +39,36 @@ while [[ $# -gt 0 ]]; do
     --with-commits)
       do_commits=true
       ;;
+    -c|--config)
+      [[ -z "$2" ]] && \
+        >&2 echo "missing argument to option '$1'" && exit 1
+      CONF_PATH=$2
+      ;;
     -h|--help)
       cat << EOF
-usage: $0 [options]
+usage: $0 [options] [-- ARGS]
 
  options:
+  -r | --release <NAME>  override release name (default: ${RELEASE_NAME})
   -k | --use-kept-date   keep used date (may have kinks)
   -u | --update-date     use existing kept date
   -w | --week            build using a cache TTL of one week
   -d | --day             build using a cache TTL of one day
        --with-commits    build considering git commits (rebuilds often)
+  -c | --config <PATH>   with different config file (default: ${CONF_PATH})
   -h | --help            this message
 
 EOF
       exit 0
       ;;
+    --)
+      break
+      ;;
   esac
   shift
 done
 
+source ${CONF_PATH}
 
 # just keeps the cache for a day
 #   adjust if you think you may need more than a day
@@ -53,14 +76,17 @@ done
 base_date=""
 $do_week && base_date="-dmonday"
 
+kept_date_fn=${CEPH_CCACHE_EPOCHS_EPOCH_FN}
+exports_fn=${CEPH_CCACHE_EPOCHS_EXPORTS_FN}
+
 if $do_kept ; then
-  if [[ ! -e "$HOME/.ccache-kept-date" ]]; then
+  if [[ ! -e "${kept_date_fn}" ]]; then
     echo "no previously kept date, ignore -k; a new date will be saved."
   else
-    kept_date=$(cat $HOME/.ccache-kept-date)
+    kept_date=$(cat ${kept_date_fn})
     if [[ -z "$kept_date" ]]; then
       echo "kept date is empty, removing file"
-      rm ~/.ccache-kept-date
+      rm ${kept_date_fn}
     else
       base_date="--utc --date=@${kept_date}"
       echo "using kept date: ${kept_date}, $(date $base_date +%D)"
@@ -75,22 +101,29 @@ echo "src date epoch: $src_date_epoch"
 echo "      bld date: $bld_date"
 
 if $do_update_kept_date; then
-  echo $src_date_epoch > $HOME/.ccache-kept-date
-  echo "kept date epoch $src_date_epoch in $HOME/.ccache-kept-date"
+  echo $src_date_epoch > ${kept_date_fn}
+  echo "kept date epoch $src_date_epoch in ${kept_date_fn}"
 fi
 
 if $do_update_kept_date; then
-cat >> $HOME/.ccache-kept-exports << EOF
+cat >> ${exports_fn} << EOF
 export SOURCE_DATE_EPOCH=$src_date_epoch
 export BUILD_DATE=$bld_date
 EOF
 fi
 
-source $HOME/.ccache-kept-exports
+if [[ ! -e "${exports_fn}" ]]; then
+  >&2 echo "unable to find exports file at '${exports_fn}'; skip."
+else
+  source ${exports_fn}
+fi
 
 extra_opts="-DENABLE_GIT_VERSION=no"
 $do_commits && extra_opts="$extra_opts -DENABLE_GIT_VERSION=yes"
 
+export CCACHE_DIR
+export CCACHE_BASEDIR
+
 ./do_cmake.sh \
   -DWITH_LTTNG=no -DWITH_BABELTRACE=no -DWITH_MANPAGE=no \
-  $extra_opts
+  $extra_opts $@

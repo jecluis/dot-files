@@ -1,0 +1,28 @@
+#!/bin/bash
+
+if ! $(which ccache >&/dev/null); then
+  >&2 echo "missing ccache; please install before running this command."
+  exit 1
+fi
+
+if [[ $# -lt 2 ]]; then
+  >&2 cat <<EOF
+usage: $(basename $0) <release> <args...>
+
+$($(which ccache) --help)
+
+EOF
+exit 1
+fi
+
+RELEASE_NAME=$1
+shift 1
+
+CONF_PATH=${HOME}/.ceph_ccache/ceph_ccache.conf
+source $CONF_PATH
+
+export CCACHE_DIR
+export CCACHE_BASEDIR
+
+ccache $@
+

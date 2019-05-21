@@ -187,6 +187,36 @@ check_installed_script_exists() {
   return 1
 }
 
+setup_ceph_ccache() {
+
+  ceph_ccache_dir="${HOME}/.ceph_ccache"
+  if [[ -e "${ceph_ccache_dir}" ]]; then
+    mkdir -p ${ceph_ccache_dir}
+  fi
+
+  if [[ ! -e "ccache/ceph_ccache.conf" ]]; then
+    return 1
+  elif [[ ! -e "${ceph_ccache_dir}/ceph_ccache.conf" ]]; then
+    cp ccache/ceph_ccache.conf ${ceph_ccache_dir}
+  fi
+
+  mkdir -p ${ceph_ccache_dir}/epochs
+  mkdir -p ${ceph_ccache_dir}/ccache
+
+  cat <<EOF
+Wrote 'ceph_ccache.conf' to ${ceph_ccache_dir}.
+You should check this file and adjust to your needs. The current values are
+solely illustrative (and for the creator's benefit).
+
+To take advantage of this, make sure to use the scripts provided, especially
+'ceph-do-cmake' and 'ceph-make'. You can also easily issue commands to ccache
+in the context of a given repository by running 'ceph-ccache'.
+
+Enjoy!
+EOF
+
+}
+
 setup_ceph() {
   cat <<EOF
 Not doing much; in the future would be nice if this also set up a basic layout
@@ -194,7 +224,9 @@ for a ceph repo, basic dependencies and what not.
 
 EOF
 
-  scripts="ceph-do-cmake ceph-make ceph-vstart-kill"
+  # install scripts
+  #
+  scripts="ceph-do-cmake ceph-make ceph-vstart-kill ceph-ccache"
   for s in $scripts; do
     echo "installing script ${s}"
     install_script ${cwd}/ceph/${s} ${s} || \
@@ -209,6 +241,15 @@ warning: local.do_cmake.sh in bin directory. We changed it to be
 symlinks. We advise you to do it; you may find it in your bin directory.
 EOF
   fi
+
+  # setup ceph ccache
+  echo "checking ceph ccache setup"
+  if [[ ! -d "ccache" ]]; then
+    >&2 echo "unable to find base ceph ccache directory; skipping setup"
+  elif ! setup_ceph_ccache ; then
+    >&2 echo "error setting up ceph ccache"
+  fi
+
 }
 
 do_vim=0

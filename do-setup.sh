@@ -190,21 +190,24 @@ check_installed_script_exists() {
 setup_ceph_ccache() {
 
   ceph_ccache_dir="${HOME}/.ceph_ccache"
-  if [[ -e "${ceph_ccache_dir}" ]]; then
+  if [[ ! -e "${ceph_ccache_dir}" ]]; then
     mkdir -p ${ceph_ccache_dir}
   fi
 
-  if [[ ! -e "ccache/ceph_ccache.conf" ]]; then
+  local_ccache_dir="${cwd}/ceph/ccache"
+  if [[ ! -e "${local_ccache_dir}/ceph_ccache.conf" ]]; then
     return 1
   elif [[ ! -e "${ceph_ccache_dir}/ceph_ccache.conf" ]]; then
-    cp ccache/ceph_ccache.conf ${ceph_ccache_dir}
+    cp ${local_ccache_dir}/ceph_ccache.conf ${ceph_ccache_dir}
   fi
 
   mkdir -p ${ceph_ccache_dir}/epochs
   mkdir -p ${ceph_ccache_dir}/ccache
 
   cat <<EOF
+
 Wrote 'ceph_ccache.conf' to ${ceph_ccache_dir}.
+
 You should check this file and adjust to your needs. The current values are
 solely illustrative (and for the creator's benefit).
 
@@ -244,7 +247,7 @@ EOF
 
   # setup ceph ccache
   echo "checking ceph ccache setup"
-  if [[ ! -d "ccache" ]]; then
+  if [[ ! -d "${cwd}/ceph/ccache" ]]; then
     >&2 echo "unable to find base ceph ccache directory; skipping setup"
   elif ! setup_ceph_ccache ; then
     >&2 echo "error setting up ceph ccache"

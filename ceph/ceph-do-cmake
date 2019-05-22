@@ -13,6 +13,7 @@ do_day=false
 do_kept=false
 do_update_kept_date=false
 do_export=false
+use_python2=false
 
 while [[ $# -gt 0 ]]; do
 
@@ -44,6 +45,9 @@ while [[ $# -gt 0 ]]; do
         >&2 echo "missing argument to option '$1'" && exit 1
       CONF_PATH=$2
       ;;
+      --with-python2)
+        use_python2=true
+        ;;
     -h|--help)
       cat << EOF
 usage: $0 [options] [-- ARGS]
@@ -56,6 +60,7 @@ usage: $0 [options] [-- ARGS]
   -d | --day             build using a cache TTL of one day
        --with-commits    build considering git commits (rebuilds often)
   -c | --config <PATH>   with different config file (default: ${CONF_PATH})
+  --with-python2         use python2
   -h | --help            this message
 
 EOF
@@ -120,6 +125,14 @@ fi
 
 extra_opts="-DENABLE_GIT_VERSION=no"
 $do_commits && extra_opts="$extra_opts -DENABLE_GIT_VERSION=yes"
+
+if $use_python2; then
+  extra_opts="${extra_opts} -DWITH_PYTHON3=OFF -DWITH_PYTHON2=ON "
+  extra_opts="${extra_opts} -DMGR_PYTHON_VERSION=2"
+else
+  extra_opts="${extra_opts} -DWITH_PYTHON3=ON -DWITH_PYTHON2=OFF "
+  extra_opts="${extra_opts} -DMGR_PYTHON_VERSION=3"
+fi
 
 export CCACHE_DIR
 export CCACHE_BASEDIR

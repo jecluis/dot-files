@@ -60,7 +60,7 @@ usage: $0 [options] [-- ARGS]
   -d | --day             build using a cache TTL of one day
        --with-commits    build considering git commits (rebuilds often)
   -c | --config <PATH>   with different config file (default: ${CONF_PATH})
-  --with-python2         use python2
+       --with-python2    use python2
   -h | --help            this message
 
 EOF

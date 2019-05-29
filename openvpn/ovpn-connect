@@ -1,0 +1,46 @@
+#!/bin/bash
+
+real_path=$(realpath $0)
+srcdir=$(dirname ${real_path})
+
+usage() {
+  cat << EOF
+usage: $0 <start|stop> <who>
+
+EOF
+}
+
+openvpn_start() {
+  [[ $# -lt 1 ]] && usage && exit 1
+
+  if ! which expect 2>/dev/null ; then
+    echo "unable to find 'expect'; please install on your system"
+    exit 1
+  fi
+
+  who=${1}
+  username=$(pass ${who}/openvpn/user)
+  password=$(pass ${who}/openvpn/passwd)
+
+  sudo ${srcdir}/lib/ovpn-do-connect ${who} ${username} ${password} || exit 1
+}
+
+if [[ $# -lt 2 ]]; then
+  usage
+  exit 1
+fi
+
+action=${1}
+who=${2}
+
+echo "${action} ${who}"
+
+case ${action} in
+  stop)
+    sudo systemctl stop openvpn@${who}
+    exit $?
+    ;;
+  start)
+    openvpn_start ${who}
+    ;;
+esac

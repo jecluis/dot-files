@@ -1,0 +1,17 @@
+#!/usr/bin/expect
+
+set who [lindex $argv 0];
+set username [lindex $argv 1];
+set password [lindex $argv 2];
+
+spawn systemctl start openvpn@$who
+
+expect "Enter Auth Username:" {
+  send "$username\n"
+}
+
+expect "Enter Auth Password:" {
+  send "$password\n"
+}
+
+interact

@@ -9,7 +9,7 @@ info() {
 }
 
 error() {
-  echo -e "\e[1;91merror:\e[0m \e[1m$*\e[0m"
+  >&2 echo -e "\e[1;91merror:\e[0m \e[1m$*\e[0m"
 }
 
 cd $(dirname $0)
@@ -255,24 +255,60 @@ EOF
 
 }
 
+setup_ovpn() {
+
+info "Installing openvpn script to ${HOME}/bin"
+
+  if [[ ! -e "/usr/sbin/openvpn" ]]; then
+    error "openvpn not installed? please check and install if not."
+    return 1
+  fi
+
+  ovpndir=${cwd}/openvpn
+  ovpn=${ovpndir}/ovpn-connect
+  ovpn_libdir=${ovpndir}/lib
+  ovpn_helper=${ovpn_libdir}/ovpn-do-connect
+
+  if [[ ! -d "${ovpndir}" ]]; then
+    error "unable to find openvpn dir at '${ovpndir}'"
+    return 1
+  elif [[ ! -d "${ovpn_libdir}" ]]; then
+    error "unable to find openvpn lib dir at '${ovpn_libdir}'"
+    return 1
+  elif [[ ! -e "${ovpn_helper}" ]]; then
+    error "unable to find openvpn helper at '${ovpn_helper}'"
+    return 1
+  elif [[ ! -e "${ovpn}" ]]; then
+    error "unable to find openvpn script at '${ovpn}'"
+    return 1
+  fi
+
+  install_script ${ovpn} ovpn-connect || \
+    ( error "installing script 'ovpn-connect'" ; exit 1 )
+
+  info "installed 'ovpn-connect'"
+}
+
 do_vim=0
 do_ssh=0
 do_zsh=0
 do_tig=0
 do_ceph=0
+do_ovpn=0
 
 set_do_all() {
   do_vim=1
   do_ssh=1
   do_zsh=1
   do_tig=1
+  do_ovpn=1
 }
 
 while [[ $# -gt 0 ]]; do
 
   case $1 in
     -h|--help|help)
-      echo "usage: $0 [vim|ssh|zsh|tig|ceph]"
+      echo "usage: $0 [vim|ssh|zsh|tig|ceph|openvpn]"
       exit 0
       ;;
     vim) do_vim=1 ;;
@@ -280,6 +316,7 @@ while [[ $# -gt 0 ]]; do
     zsh) do_zsh=1 ;;
     tig) do_tig=1 ;;
     ceph) do_ceph=1 ;;
+    openvpn) do_ovpn=1 ;;
     *)
       error "unrecognized option '$1'"
       exit 1
@@ -290,7 +327,7 @@ done
 
 if [[ $do_vim -eq 0 ]] && [[ $do_ssh -eq 0 ]] &&
    [[ $do_zsh -eq 0 ]] && [[ $do_tig -eq 0 ]] &&
-   [[ $do_ceph -eq 0 ]]; then
+   [[ $do_ceph -eq 0 ]] && [[ $do_ovpn -eq 0 ]]; then
   set_do_all
 fi
 
@@ -313,4 +350,8 @@ fi
 
 if [[ $do_ceph -eq 1 ]]; then
   setup_ceph
+fi
+
+if [[ $do_ovpn -eq 1 ]]; then
+  setup_ovpn
 fi

@@ -67,6 +67,7 @@ EOF
       exit 0
       ;;
     --)
+	  shift
       break
       ;;
   esac

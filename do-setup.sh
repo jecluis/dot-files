@@ -1,16 +1,6 @@
 #!/bin/bash
 
-warn() {
-  echo -e "\e[1;33mwarn:\e[0m \e[1m$*\e[0m"
-}
-
-info() {
-  echo -e "\e[1;96minfo:\e[0m \e[1m$*\e[0m"
-}
-
-error() {
-  >&2 echo -e "\e[1;91merror:\e[0m \e[1m$*\e[0m"
-}
+source common/print_helpers.sh
 
 cd $(dirname $0)
 cwd=$(pwd)
@@ -27,7 +17,7 @@ setup_vim() {
   fi 
 
   if [[ ! -e "${vim_dir}" ]]; then
-    error "couldn't find ${vim_dir}"
+    err "couldn't find ${vim_dir}"
     return 1
   fi
 
@@ -70,7 +60,7 @@ zsh_omz_dir=${zsh_dir}/oh-my-zsh
 setup_zsh() {
 
   if [[ -e "${HOME}/.zshrc" ]]; then
-    error "zshrc already exists at ${HOME}/.zshrc; no-op."
+    err "zshrc already exists at ${HOME}/.zshrc; no-op."
     return 0
   fi
 
@@ -114,7 +104,7 @@ setup_tig() {
   deps="autoconf automake make gcc"
   for d in $deps; do
     if ! which ${d} ; then
-      error "${d} not detected; can't build tig"
+      err "${d} not detected; can't build tig"
       return 1
     fi
   done
@@ -131,7 +121,7 @@ setup_tig() {
   cd ${cwd}
 
   if [[ ! -x "${tig_build}/bin/tig" ]]; then
-    error "can't find executable tig at ${tig_build}/bin/tig"
+    err "can't find executable tig at ${tig_build}/bin/tig"
     return 1
   fi
 
@@ -167,7 +157,7 @@ install_script() {
 
     if [[ "${sha_a}" != "${sha_b}" ]]; then
       for fn in $(ls -r ${dst}*); do
-        echo "moving $fn to ${fn}.old"
+        warn "moving $fn to ${fn}.old"
         mv $fn $fn.old
       done
       ln -fs ${src} ${dst}
@@ -204,9 +194,7 @@ setup_ceph_ccache() {
   mkdir -p ${ceph_ccache_dir}/epochs
   mkdir -p ${ceph_ccache_dir}/ccache
 
-  cat <<EOF
-
-Wrote 'ceph_ccache.conf' to ${ceph_ccache_dir}.
+  info "Wrote 'ceph_ccache.conf' to ${ceph_ccache_dir}.
 
 You should check this file and adjust to your needs. The current values are
 solely illustrative (and for the creator's benefit).
@@ -215,42 +203,35 @@ To take advantage of this, make sure to use the scripts provided, especially
 'ceph-do-cmake' and 'ceph-make'. You can also easily issue commands to ccache
 in the context of a given repository by running 'ceph-ccache'.
 
-Enjoy!
-EOF
+Enjoy!"
 
 }
 
 setup_ceph() {
-  cat <<EOF
-Not doing much; in the future would be nice if this also set up a basic layout
-for a ceph repo, basic dependencies and what not.
-
-EOF
+  info "Not doing much; in the future would be nice if this also set up a
+basic layout for a ceph repo, basic dependencies and what not."
 
   # install scripts
   #
+  info "installing ceph scripts"
   scripts="ceph-do-cmake ceph-make ceph-vstart-kill ceph-ccache"
   for s in $scripts; do
-    echo "installing script ${s}"
     install_script ${cwd}/ceph/${s} ${s} || \
-      ( echo "error installing script ${s}" ; exit 1 )
+      ( err "installing script ${s}" ; exit 1 )
   done
 
   if check_installed_script_exists "local.do_cmake.sh"; then
-    cat <<EOF
-
-warning: local.do_cmake.sh in bin directory. We changed it to be
+    warn "local.do_cmake.sh in bin directory. We changed it to be
 'ceph-do-cmake' instead, but we will not remove any existing files or
-symlinks. We advise you to do it; you may find it in your bin directory.
-EOF
+symlinks. We advise you to do it; you may find it in your bin directory."
   fi
 
   # setup ceph ccache
-  echo "checking ceph ccache setup"
+  info "checking ceph ccache setup"
   if [[ ! -d "${cwd}/ceph/ccache" ]]; then
-    >&2 echo "unable to find base ceph ccache directory; skipping setup"
+    warn "unable to find base ceph ccache directory; skipping setup"
   elif ! setup_ceph_ccache ; then
-    >&2 echo "error setting up ceph ccache"
+    err "setting up ceph ccache"
   fi
 
 }
@@ -260,7 +241,7 @@ setup_ovpn() {
 info "Installing openvpn script to ${HOME}/bin"
 
   if [[ ! -e "/usr/sbin/openvpn" ]]; then
-    error "openvpn not installed? please check and install if not."
+    err "openvpn not installed? please check and install if not."
     return 1
   fi
 
@@ -270,21 +251,21 @@ info "Installing openvpn script to ${HOME}/bin"
   ovpn_helper=${ovpn_libdir}/ovpn-do-connect
 
   if [[ ! -d "${ovpndir}" ]]; then
-    error "unable to find openvpn dir at '${ovpndir}'"
+    err "unable to find openvpn dir at '${ovpndir}'"
     return 1
   elif [[ ! -d "${ovpn_libdir}" ]]; then
-    error "unable to find openvpn lib dir at '${ovpn_libdir}'"
+    err "unable to find openvpn lib dir at '${ovpn_libdir}'"
     return 1
   elif [[ ! -e "${ovpn_helper}" ]]; then
-    error "unable to find openvpn helper at '${ovpn_helper}'"
+    err "unable to find openvpn helper at '${ovpn_helper}'"
     return 1
   elif [[ ! -e "${ovpn}" ]]; then
-    error "unable to find openvpn script at '${ovpn}'"
+    err "unable to find openvpn script at '${ovpn}'"
     return 1
   fi
 
   install_script ${ovpn} ovpn-connect || \
-    ( error "installing script 'ovpn-connect'" ; exit 1 )
+    ( err "installing script 'ovpn-connect'" ; exit 1 )
 
   info "installed 'ovpn-connect'"
 }
@@ -318,7 +299,7 @@ while [[ $# -gt 0 ]]; do
     ceph) do_ceph=1 ;;
     openvpn) do_ovpn=1 ;;
     *)
-      error "unrecognized option '$1'"
+      err "unrecognized option '$1'"
       exit 1
       ;;
   esac

@@ -247,6 +247,16 @@ info "Installing openvpn script to ${HOME}/bin"
     return 1
   fi
 
+  if ! which pass 2>/dev/null ; then
+    err "'pass' not installed; please install 'password-store'"
+    return 1
+  fi
+
+  if ! pass show >&/dev/null ; then
+    err "unable to obtain password store; maybe needs 'pass init'?"
+    return 1
+  fi
+
   ovpndir=${cwd}/openvpn
   ovpn=${ovpndir}/ovpn-connect
   ovpn_libdir=${ovpndir}/lib

@@ -10,19 +10,62 @@ usage: $0 <start|stop> <who>
 EOF
 }
 
+is_userpass() {
+  who="${1}"
+  [[ -z "${who}" ]] && exit 1
+
+  if ! pass ls openvpn/${who}/is_userpass >&/dev/null; then
+    return 1
+  fi
+  return 0
+}
+
+is_passphrase() {
+  who="${1}"
+  [[ -z "${who}" ]] && exit 1
+  if ! pass ls openvpn/${who}/is_passphrase >&/dev/null; then
+    return 1
+  fi
+  return 0
+}
+
+is_true() {
+  if [[ $1 -eq 0 ]]; then return 0 ; else return 1 ; fi
+}
+
 openvpn_start() {
   [[ $# -lt 1 ]] && usage && exit 1
+  who="${1}"
 
   if ! which expect 2>/dev/null ; then
-    echo "unable to find 'expect'; please install on your system"
+    echo "unable to find 'expect'; please install package on your system"
     exit 1
   fi
 
-  who=${1}
-  username=$(pass ${who}/openvpn/user)
-  password=$(pass ${who}/openvpn/passwd)
+  is_userpass "${who}"
+  use_userpass=$?
+  is_passphrase "${who}"
+  use_passphrase=$?
 
-  sudo ${srcdir}/lib/ovpn-do-connect ${who} ${username} ${password} || exit 1
+  if is_true $use_userpass && is_true $use_passphrase; then
+#  [[ $use_userpass && $use_passphrase ]] && \
+    >&2 echo "error: '${who}' specified as both userpass and passphrase" && \
+    exit 1
+  fi
+
+  if ! is_true $use_userpass && ! is_true $use_passphrase ; then
+    >&2 echo "error: '${who}' does not specify userpass or passphrase" && \
+    exit 1
+  fi
+
+  method=
+  if is_true $use_userpass ; then
+    method="userpass"
+  else
+    method="passphrase"
+  fi
+
+  ${srcdir}/lib/ovpn-do-connect ${who} ${method}
 }
 
 if [[ $# -lt 2 ]]; then

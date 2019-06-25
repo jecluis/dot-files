@@ -1,0 +1,94 @@
+#!/bin/bash
+
+usage() {
+  cat <<EOF
+usage: $(basename $0) <name> [options]
+
+OPTIONS:
+  -h | --help           This message
+  -P | --passphrase     Configure for passphrase
+  -u | --userpass       Configure for user/pass  
+
+NOTES:
+  Options for 'passphrase' and 'userpass' are mutually exclusive; if both
+  are specified, then 'userpass' takes precedence.
+
+  If neither are specified, then we'll interatively ask for more information.
+
+EOF
+}
+
+if [[ $# -lt 1 ]]; then
+  echo "error: must provide a 'name' for this openvpn setup"
+  usage
+  exit 1
+fi
+
+who="${1}"
+shift 1
+[[ -z "${who}" ]] && >&2 echo "error: empty 'name' parameter" && \
+  usage && exit 1
+[[ "${who}" =~ ^- ]] && >&2 echo "error: 'name' must not be an option" && \
+  usage && exit 1
+
+is_passphrase=false
+is_userpass=false
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -h|--help) usage && exit 0 ;;
+    -P|--passphrase) is_passphrase=true ;;
+    -u|--username) is_userpass=true ;;
+    *) >&2 echo "unrecognized option '$1'" ; usage && exit 1 ;;
+  esac
+  shift 1
+done
+
+if $is_passphrase && $is_userpass ; then
+  is_passphrase=false
+fi
+
+if ! $is_passphrase && ! $is_userpass; then
+  while [[ 1 ]] ; do
+    read -r -p "configuring using a passphrase? [y/N]: " for_passphrase
+    [[ -z "${for_passphrase}" ]] && is_passphrase=false && break
+    # ${foo,,} turns stuff into lower-case for some reason
+    [[ "${for_passphrase,,}" =~ ^(yes|y)$ ]] && is_passphrase=true && break
+    [[ "${for_passphrase,,}" =~ ^(no|n)$ ]] && is_passphrase=false && break
+    >&2 echo "unrecognized answer '${for_passphrase}'"
+  done
+fi
+
+[[ ! $is_passphrase ]] && is_userpass=true
+
+if $is_passphrase ; then
+  echo "---------- Please provide your passphrase  ----------"
+  pass insert openvpn/${who}/passphrase || exit 1
+  echo "------- Automatically setting passphrase type -------"
+  echo -e "yes\nyes" | \
+    pass insert openvpn/${who}/is_passphrase >& /dev/null || \
+    exit 1
+else
+  [[ ! $is_userpass ]] && >&2 echo "error! expected userpass" && exit 1
+
+  while [[ 1 ]]; do
+    read -p "Provide your username: " username
+    [[ -z "${username}" ]] && echo "please try again." && continue
+    break
+  done
+
+  echo
+#  echo "---------- Please provide your username  ----------"
+#  pass insert openvpn/${who}/username || exit 1
+#  echo
+#  echo "---------- Please provide your password  ----------"
+  pass insert openvpn/${who}/password || exit 1
+  echo -e "${username}\n${username}" | \
+    pass insert openvpn/${who}/username >& /dev/null  || exit 1
+  echo
+  echo "------- Automatically setting user/pass type -------"
+  echo -e "yes\nyes" | pass insert openvpn/${who}/is_userpass >& /dev/null ||\
+    exit 1
+fi
+
+echo "Finished setting up openvpn credentials for '${who}'"

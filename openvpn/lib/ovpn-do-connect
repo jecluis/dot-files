@@ -1,17 +1,60 @@
 #!/usr/bin/expect
 
 set who [lindex $argv 0];
-set username [lindex $argv 1];
-set password [lindex $argv 2];
+set method [lindex $argv 1];
 
-spawn systemctl start openvpn@$who
+set is_userpass false
 
-expect "Enter Auth Username:" {
-  send "$username\n"
+puts [exec pwd]
+
+if { $method == "userpass" } {
+  set is_userpass true
 }
 
-expect "Enter Auth Password:" {
-  send "$password\n"
+set username ""
+set password ""
+set passphrase ""
+
+if { $is_userpass } {
+  if { [catch {set username [exec pass show openvpn/$who/username]} msg] } {
+    puts "expected username for '$who'; abort"
+    exit 1
+  }
+  if {[catch {set password [exec pass show openvpn/$who/password]} msg] } {
+    puts "expected password for '$who'; abort"
+    exit 1
+  }
+} else {
+  if {[catch {set passphrase [exec pass show openvpn/$who/passphrase]} msg]} {
+    puts "expected passphrase for '$who': $msg ; abort"
+    exit 1
+  }
 }
 
-interact
+#puts "user: $username, pw: $password, passphrase: $passphrase"
+
+spawn /usr/bin/sudo systemctl start openvpn@$who
+
+expect {
+  "*sudo*password*" {
+    stty -echo
+    interact -u tty_spawn_id -o "\r" return
+    stty echo
+    exp_continue
+  }
+
+  "*Private Key*" {
+    send -- "$passphrase\r"
+    exp_continue
+  }
+  "*Username*" {
+    send -- "$username\r"
+    expect "*Password*" {
+      send -- "$password\r"
+    }
+    interact
+  }
+  eof
+}
+
+exit 0

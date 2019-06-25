@@ -160,11 +160,13 @@ install_script() {
         warn "moving $fn to ${fn}.old"
         mv $fn $fn.old
       done
-      ln -fs ${src} ${dst}
+      ln -fs ${src} ${dst} 
     fi
   else
     ln -fs ${src} ${dst}
   fi
+  # this can be a no-op, which technically still means we installed it
+  bolden "  installed '${src}' to '${dst}'"
 }
 
 check_installed_script_exists() {

@@ -6,3 +6,5 @@ DOT FILES
 * vim setup
 * zsh setup
 * ceph scripts
+* openvpn
+* mutt

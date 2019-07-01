@@ -1,0 +1,41 @@
+#!/bin/bash
+
+realpath=$(realpath $0)
+realdir=$(dirname ${realpath})
+
+passcmd=${realdir}/pass
+
+source ${realdir}/../common/print_helpers.sh
+
+
+usage() {
+  cat <<EOF
+usage: $0 <KEYID>
+
+Removes a keyid from the password store, disallowing its access.
+EOF
+}
+
+if [[ ! -x "${passcmd}" ]]; then
+  err "unable to find 'pass' command at '${passcmd}'"
+  exit 1
+fi
+
+key="${1}"
+if [[ -z "${key}" ]]; then
+  err "missing argument KEYID"
+  usage
+  exit 1
+elif [[ "${key}" == "-h" ]] || [[ "${key}" == "--help" ]]; then
+  usage
+  exit 0
+fi
+
+store=${PASSWORD_STORE_DIR:-${HOME}/.password-store}
+
+existing_keys=($(cat ${store}/.gpg-id | grep -v ${key}))
+
+echo ${existing_keys[*]}
+
+${passcmd} init ${existing_keys[*]} || exit 1
+

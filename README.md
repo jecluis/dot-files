@@ -8,3 +8,4 @@ DOT FILES
 * ceph scripts
 * openvpn
 * mutt
+* password-store

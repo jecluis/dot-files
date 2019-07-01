@@ -1,0 +1,37 @@
+#!/bin/bash
+
+realpath=$(realpath $0)
+realdir=$(dirname ${realpath})
+
+source ${realdir}/../common/print_helpers.sh
+
+me="${0}"
+realpass=
+for p in $(which -a pass); do
+  if [[ "${p}" == "${me}" ]]; then
+    continue
+  fi
+  realpass="${p}"
+  break
+done
+
+if [[ -z "${realpath}" ]]; then
+  err "unable to find 'pass'; please install 'password-store' on your system."
+  exit 1
+fi
+
+if [[ ! -e "${realdir}/pass.conf" ]]; then
+  warn "pass.conf not found at '${realdir}'"
+else
+  source ${realdir}/pass.conf
+fi
+
+gpgdir=$(realpath -m ${PASSWORD_STORE_GPG_DIR:-${HOME}/.gnupg})
+if [[ ! -e "${gpgdir}" ]]; then
+  err "specified GPG directory '${gpgdir}' does not exist"
+  exit 1
+fi
+
+export PASSWORD_STORE_GPG_OPTS="--homedir $(realpath ${gpgdir})"
+
+$realpass $*

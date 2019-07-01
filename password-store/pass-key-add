@@ -1,0 +1,41 @@
+#!/bin/bash
+
+realpath=$(realpath $0)
+realdir=$(dirname ${realpath})
+
+passcmd=${realdir}/pass
+
+source ${realdir}/../common/print_helpers.sh
+
+
+usage() {
+  cat <<EOF
+usage: $0 <KEYID>
+
+Adds a new keyid to the password store, allowing said key to access it.
+EOF
+}
+
+if [[ ! -x "${passcmd}" ]]; then
+  err "unable to find 'pass' command at '${passcmd}'"
+  exit 1
+fi
+
+new_key="${1}"
+if [[ -z "${new_key}" ]]; then
+  err "missing argument KEYID"
+  usage
+  exit 1
+elif [[ "$new_key" == "-h" ]] || [[ "$new_key" == "--help" ]]; then
+  usage
+  exit 0
+fi
+
+store=${PASSWORD_STORE_DIR:-${HOME}/.password-store}
+
+existing_keys=($(cat ${store}/.gpg-id))
+
+echo ${existing_keys[*]}
+
+${passcmd} init ${existing_keys[*]} $new_key || exit 1
+

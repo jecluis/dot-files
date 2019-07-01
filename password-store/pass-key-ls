@@ -1,0 +1,61 @@
+#!/bin/bash
+
+realpath=$(realpath $0)
+realdir=$(dirname ${realpath})
+
+passcmd=${realdir}/pass
+
+source ${realdir}/../common/print_helpers.sh
+
+
+usage() {
+  cat <<EOF
+usage: $0 [-h|--help]
+Lists keys allowed by the password store, if known locally
+EOF
+}
+
+if [[ ! -x "${passcmd}" ]]; then
+  err "unable to find 'pass' command at '${passcmd}'"
+  exit 1
+fi
+
+if [[ -n "$1" ]]; then
+  if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+    usage
+    exit 0
+  else
+    err "unrecognized option: '$1'"
+    exit 1
+  fi
+fi
+
+store=${PASSWORD_STORE_DIR:-${HOME}/.password-store}
+existing_keys=($(cat ${store}/.gpg-id))
+
+gpgdir="${HOME}/.gnupg"
+
+if [[ -e "${realdir}/pass.conf" ]]; then
+  source ${realdir}/pass.conf
+else
+  warn "unable to source 'pass.conf', assuming default gpg dir"
+fi
+
+if [[ -z "${PASSWORD_STORE_GPG_DIR}" ]]; then
+  warn "unable to obtain store-specific gpg directory; assuming default"
+else
+  gpgdir="${PASSWORD_STORE_GPG_DIR}"
+fi
+
+opts="--homedir ${gpgdir}"
+
+for key in ${existing_keys[*]}; do
+
+  if ! gpg $opts --list-keys ${key} >& /dev/null; then
+    info "entry for '${key}' does not exist locally"
+    continue
+  fi
+  gpg $opts --list-keys ${key}
+  echo
+done
+

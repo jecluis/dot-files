@@ -19,6 +19,16 @@
 real_path=$(realpath $0)
 srcdir=$(dirname ${real_path})
 
+source ${srcdir}/../common/print_helpers.sh
+
+echo "PATH = ${PATH}"
+echo "pass = $(which pass)"
+passcmd=$(which pass)
+if [[ -z "${passcmd}" ]]; then
+  err "unable too find 'pass' command; please install password-store."
+  exit 1
+fi
+
 usage() {
   cat << EOF
 usage: $0 <start|stop> <who>
@@ -30,7 +40,7 @@ is_userpass() {
   who="${1}"
   [[ -z "${who}" ]] && exit 1
 
-  if ! pass ls openvpn/${who}/is_userpass >&/dev/null; then
+  if ! $passcmd ls openvpn/${who}/is_userpass >&/dev/null; then
     return 1
   fi
   return 0
@@ -39,7 +49,7 @@ is_userpass() {
 is_passphrase() {
   who="${1}"
   [[ -z "${who}" ]] && exit 1
-  if ! pass ls openvpn/${who}/is_passphrase >&/dev/null; then
+  if ! $passcmd ls openvpn/${who}/is_passphrase >&/dev/null; then
     return 1
   fi
   return 0

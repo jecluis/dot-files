@@ -23,10 +23,30 @@ if which tput >&/dev/null; then
   [[ -n "${num_colors}" ]] && [[ num_colors -ge 8 ]] && has_color=true
 fi
 
+# read: \e[A;Bm with
+#  A = modifier
+#   0 - reset all attributes
+#   1 - bold
+#  Should we specify \e[0;Bm then we are essentially saying the color B will
+#  not be subject to any previous modifier. With \e[1;B, we're stating that
+#  B will be modified with bold.
+#
+# B = color
+#   0 - reset all attributes
+#   1 - set bold
+#   91 - Light red
+#   93 - Light yellow
+#   96 - Light Cyan
+#
+# More info:
+#   http://tldp.org/HOWTO/Bash-Prompt-HOWTO/x329.html
+#   https://misc.flogisoft.com/bash/tip_colors_and_formatting (with a table)
+#
 color_reset='\e[0m'
 color_info='\e[1;96m'
 color_err='\e[1;91m'
 color_bold='\e[0;1m'
+color_warn='\e[1;93m'
 
 if ! $has_color ; then
   color_reset=
@@ -45,4 +65,8 @@ err() {
 
 bolden() {
   echo -e "${color_bold}$*${color_reset}"
+}
+
+warn() {
+  echo -e "${color_warn}warning: ${color_bold}$*${color_reset}"
 }

@@ -1,0 +1,49 @@
+
+IMAPStore joao-suse-com-remote
+Host gwmail.emea.novell.com
+Port  993
+User jluis
+PassCmd "pass mutt/joao-suse-com"
+SSLType IMAPS
+CertificateFile /etc/ssl/ca-bundle.pem
+
+MaildirStore joao-suse-com-local
+Subfolders Verbatim
+Path ~/.local/share/mail/joao-suse-com/
+Inbox ~/.local/share/mail/joao-suse-com/INBOX
+Flatten .
+
+Channel joao-suse-com
+Expunge Both
+Master :joao-suse-com-remote:
+Slave :joao-suse-com-local:
+Patterns * !"[Gmail]/All Mail"
+Create Both
+SyncState *
+MaxMessages 0
+# End profile
+
+
+IMAPStore joao-suse-de-remote
+Host imap.suse.de
+Port  993
+User jluis
+PassCmd "pass mutt/joao-suse-de"
+SSLType IMAPS
+CertificateFile /etc/ssl/ca-bundle.pem
+
+MaildirStore joao-suse-de-local
+Subfolders Verbatim
+Path ~/.local/share/mail/joao-suse-de/
+Inbox ~/.local/share/mail/joao-suse-de/INBOX
+Flatten .
+
+Channel joao-suse-de
+Expunge Both
+Master :joao-suse-de-remote:
+Slave :joao-suse-de-local:
+Patterns * !"[Gmail]/All Mail"
+Create Both
+SyncState *
+MaxMessages 0
+# End profile

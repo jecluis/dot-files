@@ -1,0 +1,6 @@
+#
+#
+
+color index brightwhite blue '~N ~s "L3:"'
+color index brightwhite green '~N ~h "Assigned-To: jluis"'
+color index brightwhite red '~N ~s "L3:" -h "Assigned-To: jluis"'

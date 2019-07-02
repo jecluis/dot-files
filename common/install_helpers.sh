@@ -24,13 +24,16 @@ install_file() {
   ( [[ -z "${src}" ]] || [[ -z "${dst}" ]] ) && \
     err "install_file requires two arguments; die." && exit 1
 
-  if [[ -e "$dst" ]]; then
+  sha_a=
+  sha_b=
+
+  if [[ -e "$dst" && ! -d "$dst" ]]; then
     sha_a=$(sha256sum ${src} | cut -f1 -d' ')
     sha_b=$(sha256sum ${dst} | cut -f1 -d ' ')
+  fi
 
-    if [[ "${sha_a}" != "${sha_b}" ]]; then
-      backup_file "${dst}" "${dst}.bak" || return 1
-    fi
+  if [[ ( -n "${sha_a}" && "${sha_a}" != "${sha_b}" ) || -e "${dst}" ]]; then
+    backup_file "${dst}" "${dst}.bak" || return 1
   fi
   if ! ln -fs ${src} ${dst}; then
     err "unable to link file from '${dst}' to '${src}'"

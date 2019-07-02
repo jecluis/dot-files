@@ -1,0 +1,20 @@
+[database]
+path=/home/joao/.local/share/mail
+
+[user]
+name=Joao Eduardo Luis
+primary_email=joao@suse.com
+other_email=joao@suse.de;
+
+[new]
+tags=unread;inbox;
+ignore=
+
+[search]
+exclude_tags=deleted;spam;
+
+[maildir]
+synchronize_flags=true
+
+[crypto]
+gpg_path=gpg

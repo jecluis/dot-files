@@ -82,6 +82,7 @@ for thing in ${precheck_to_run[*]}; do
   path="$(realpath -m ./${thing})"
   setup_script="${path}/run_setup.sh"
   help_script="${path}/run_help.sh"
+  info_script="${path}/run_info.sh"
 
   [[ ! -e "${setup_script}" ]] && \
     err "unable to find setup script for '${thing}' at '${setup_script}'" && \
@@ -94,6 +95,16 @@ for thing in ${precheck_to_run[*]}; do
 
   if $run_help && [[ -e "${help_script}" && -x "${help_script}" ]]; then
     ${help_script}
+    continue
+  fi
+
+  if [[ -e "${info_script}" && -x "${info_script}" ]]; then
+    if ! ${info_script} can_auto_setup ; then
+      info "'${thing}' setup must be run manually; see ${setup_script}"
+      continue
+    fi
+  else
+    info "'${thing}' setup must be run manually; see ${setup_script}"
     continue
   fi
   postcheck_to_run=(${postcheck_to_run[*]} ${thing})

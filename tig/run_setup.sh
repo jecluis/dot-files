@@ -25,6 +25,12 @@ source common/install_helpers.sh
 
 cwd=$(pwd)
 
+tig_repo="https://github.com/jonas/tig.git"
+tig_dir=${cwd}/tig
+tig_rc=${tig_dir}/tigrc
+tig_src=${tig_dir}/src
+tig_build=${tig_src}/build
+
 setup_tig() {
 
   deps="autoconf automake make gcc"

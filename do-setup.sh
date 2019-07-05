@@ -22,10 +22,10 @@ source common/install_helpers.sh
 cd $(dirname $0)
 cwd=$(pwd)
 
-available=($(find . -iname 'do_setup.sh' | xargs dirname | xargs))
+#available=($(find . -iname 'run_setup.sh' | xargs dirname | xargs))
 
 available=()
-for thing in $(find . -iname 'do_setup.sh'); do
+for thing in $(find . -iname 'run_setup.sh'); do
   name=$(basename $(realpath $(dirname ${thing})))
   [[ -z "${name}" ]] && \
     err "ended up with empty dir name for '${thing}'" && \
@@ -45,7 +45,9 @@ is_available() {
   return 1
 }
 
-to_run=()
+precheck_to_run=()
+postcheck_to_run=()
+run_dry=false
 while [[ $# -gt 0 ]]; do
 
   case $1 in
@@ -54,39 +56,52 @@ while [[ $# -gt 0 ]]; do
       echo "usage: $0 [${avail}]"
       exit 0
       ;;
+    --dry)
+      run_dry=true
+      ;;
     *)
       if ! is_available "$1" ; then
         err "we don't recognize '${1}'"
         exit 1
       fi
 
-      to_run=(${to_run[*]} ${1})
+      precheck_to_run=(${precheck_to_run[*]} ${1})
       ;;
   esac
   shift
 done
 
-if [[ ${#to_run[*]} -eq 0 ]]; then
-  to_run=(${available[*]})
+if [[ ${#precheck_to_run[*]} -eq 0 ]]; then
+  precheck_to_run=(${available[*]})
 fi
 
 # ensure all scripts exist and are executable
-for thing in ${to_run[*]}; do
+for thing in ${precheck_to_run[*]}; do
 
-  script="$(realpath -m ./${thing}/do_setup.sh)"
-  [[ ! -e "${script}" ]] && \
-    err "unable to find setup script for '${thing}' at '${script}'" && \
+  path="$(realpath -m ./${thing})"
+  setup_script="${path}/run_setup.sh"
+  [[ ! -e "${setup_script}" ]] && \
+    err "unable to find setup script for '${thing}' at '${setup_script}'" && \
     exit 1
-  [[ ! -x "${script}" ]] && \
-    err "setup script at '${script}' for '${thing}' is not executable" && \
+
+  if [[ ! -x "${setup_script}" ]]; then
+    err "setup script for '${thing}' at '${setup_script}' is not executable"
     exit 1
+  fi
+  postcheck_to_run=(${postcheck_to_run[*]} ${thing})
+
 done
 
-for thing in ${to_run[*]}; do
+num_run=0
+for thing in ${postcheck_to_run[*]}; do
 
-  script="$(realpath -m ./${thing}/do_setup.sh)"
+  script="$(realpath -m ./${thing}/run_setup.sh)"
   info "running install script for '${thing}'"
-  ${script} || exit 1
-
+  if ! $run_dry; then
+    ${script} || exit 1
+  fi
+  num_run=$((num_run+1))
 done
+
+echo "ran a total of $num_run scripts, out of ${#available[*]} available"
 

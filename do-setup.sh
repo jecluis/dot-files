@@ -47,6 +47,7 @@ is_available() {
 
 precheck_to_run=()
 postcheck_to_run=()
+run_help=false
 run_dry=false
 while [[ $# -gt 0 ]]; do
 
@@ -54,7 +55,7 @@ while [[ $# -gt 0 ]]; do
     -h|--help|help)
       avail="$(echo ${available[*]} | sed 's/ / \| /g')"
       echo "usage: $0 [${avail}]"
-      exit 0
+      run_help=true
       ;;
     --dry)
       run_dry=true
@@ -80,6 +81,8 @@ for thing in ${precheck_to_run[*]}; do
 
   path="$(realpath -m ./${thing})"
   setup_script="${path}/run_setup.sh"
+  help_script="${path}/run_help.sh"
+
   [[ ! -e "${setup_script}" ]] && \
     err "unable to find setup script for '${thing}' at '${setup_script}'" && \
     exit 1
@@ -88,9 +91,16 @@ for thing in ${precheck_to_run[*]}; do
     err "setup script for '${thing}' at '${setup_script}' is not executable"
     exit 1
   fi
+
+  if $run_help && [[ -e "${help_script}" && -x "${help_script}" ]]; then
+    ${help_script}
+    continue
+  fi
   postcheck_to_run=(${postcheck_to_run[*]} ${thing})
 
 done
+
+$run_help && exit 0
 
 num_run=0
 for thing in ${postcheck_to_run[*]}; do

@@ -4,10 +4,10 @@ path=/home/joao/.local/share/mail
 [user]
 name=Joao Eduardo Luis
 primary_email=joao@suse.com
-other_email=joao@suse.de;
+other_email=joao@suse.de;jluis@suse.com;jluis@suse.de
 
 [new]
-tags=unread;inbox;
+tags=unread;inbox;new
 ignore=
 
 [search]

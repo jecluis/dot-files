@@ -5,10 +5,11 @@ tls_trust_file	/etc/ssl/ca-bundle.pem
 logfile	~/.config/msmtp/msmtp.log
 
 account joao-suse-com
-host gwmail.emea.novell.com
-port 26
+auth login
+host smtp.office365.com
+port 587
 from joao@suse.com
-user jluis
+user jluis@suse.com
 passwordeval "pass mutt/joao-suse-com"
 
 account joao-suse-de

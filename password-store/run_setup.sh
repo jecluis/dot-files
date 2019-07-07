@@ -34,7 +34,7 @@ debug() {
 
 cwd=$(pwd)
 storedir="${HOME}/.password-store"
-ourdir="$(dirname $0)"
+ourdir="$(realpath $(dirname $0))"
 
 keyid=
 auto_keyid=

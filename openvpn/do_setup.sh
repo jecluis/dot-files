@@ -73,7 +73,7 @@ info "Installing openvpn script to ${HOME}/bin"
 }
 
 do_setup() {
-  setup_ceph || return 1
+  setup_ovpn || return 1
   return 0
 }
 

@@ -4,14 +4,37 @@ tls	on
 tls_trust_file	/etc/ssl/ca-bundle.pem
 logfile	~/.config/msmtp/msmtp.log
 
+
+# --- note ---
+#  o365 won't allow sending emails using aliases. And, for that matter,
+#  it's being a PITA with mutt. Therefore, rely instead on imap.suse.de, which
+#  is running a decent smtp server.
+#
+#  In the words of lars, we changed a good email server with bad calendaring,
+#  for a mediocre email server with good calendaring.
+#
+#  ...
+# 
+#account joao-suse-com
+#auth login
+#host smtp.office365.com
+#port 587
+##from joao@suse.com
+#from jluis@suse.com
+#user jluis@suse.com
+#passwordeval "pass mutt/joao-suse-com"
+
 account joao-suse-com
-auth login
-host smtp.office365.com
+host imap.suse.de
 port 587
-#from joao@suse.com
-from jluis@suse.com
-user jluis@suse.com
-passwordeval "pass mutt/joao-suse-com"
+from joao@suse.de
+tls on
+tls_trust_file /etc/ssl/certs/SUSE_Trust_Root.pem
+tls_starttls on
+auth plain
+from joao@suse.com
+user jluis
+passwordeval "pass mutt/joao-suse-de"
 
 account joao-suse-de
 host imap.suse.de

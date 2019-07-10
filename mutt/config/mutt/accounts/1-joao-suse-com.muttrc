@@ -1,9 +1,9 @@
 # vim: filetype=neomuttrc
 # muttrc file for account joao-suse-com
 set realname = "Joao Eduardo Luis"
-set from = "joao@suse.com"
 set sendmail = "msmtp -a joao-suse-com"
-alias me Joao Eduardo Luis <joao@suse.com>
+set from = "jluis@suse.com"
+alias me Joao Eduardo Luis <jluis@suse.com>
 set folder = "/home/joao/.local/share/mail/joao-suse-com"
 set header_cache = /home/joao/.cache/mutt/joao-suse-com/headers
 set message_cachedir = /home/joao/.cache/mutt/joao-suse-com/bodies

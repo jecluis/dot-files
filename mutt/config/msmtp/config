@@ -8,7 +8,8 @@ account joao-suse-com
 auth login
 host smtp.office365.com
 port 587
-from joao@suse.com
+#from joao@suse.com
+from jluis@suse.com
 user jluis@suse.com
 passwordeval "pass mutt/joao-suse-com"
 

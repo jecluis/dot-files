@@ -88,7 +88,7 @@ install_mutt() {
   user_share="${HOME}/.share"
   user_local="${HOME}/.local"
 
-  what=(config local cache)
+  what=(config local)
   for w in ${what[*]}; do
     ours=${cwd}/mutt/${w}/mutt
     theirs=${HOME}/.${w}/mutt
@@ -118,11 +118,22 @@ create_maildirs() {
   [[ ! -e "${file}" || ${#maildirs[*]} -eq 0 ]] && \
     err "unable to create maildirs; die." && exit 1
 
+  [[ ! -e "${HOME}/.cache/mutt" ]] && \
+    mkdir -p ${HOME}/.cache/mutt && \
+    info "created cache directory for mutt"
+
   for d in ${maildirs[*]}; do
     md=${HOME}/$(echo ${d} | sed 's/~\///')
     if [[ ! -e "${md}" ]]; then
       info "creating maildir at '${md}'"
       mkdir -p ${md} || return 1
+    fi
+
+    if [[ ! -e "${HOME}/.cache/mutt/${md}" ]]; then
+      md_name=$(basename ${md})
+      md_cache="${HOME}/.cache/mutt/${md_name}"
+      mkdir -p $md_cache || return 1
+      info "created maildir cache at '${md_cache}'"
     fi
   done
   return 0

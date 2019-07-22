@@ -1,0 +1,77 @@
+# vim: ft=neomuttrc
+#
+
+# messages addressed to me
+#
+set my_gh_addresses = "~t '(joao|jluis)@suse.(com|de)'"
+
+# turns out this is a very, very bad idea...
+
+#color index brightblack color99 "$my_gh_addresses"
+#color index_subject brightblack color99 "$my_gh_addresses"
+#color index_author brightblack color99 "$my_gh_addresses"
+#
+#color index brightwhite color99 "!~N $my_gh_addresses"
+#color index_subject brightwhite color99 "!~N $my_gh_addresses"
+#color index_author brightwhite color99 "!~N $my_gh_addresses"
+
+# github origin sender
+#
+set my_gh_sender = "=t 'ceph@noreply.github.com'"
+
+# github modifiers
+#
+# be careful of the spacing when breaking lines - that will break the regex
+set my_gh_modifiers = \
+  "~c '(author|comment|manual|mention|\
+review_requested|state_changed|team_mention)'"
+
+set my_gh_thread = \
+    "~( $my_gh_sender $my_gh_modifiers )"
+
+# threads
+#
+# threads containing monitor keywords
+#
+
+set my_gh_mon_thread = \
+  "~( $my_gh_sender ~s "^[mM]on" )"
+
+color index brightblack color45 "$my_gh_mon_thread"
+color index_author brightblack color45 "$my_gh_mon_thread"
+color index_subject brightblack color45 "$my_gh_mon_thread"
+
+# change monitor threads' colors if message read
+#
+color index brightwhite color45 "!~N $my_gh_mon_thread"
+color index_author brightwhite color45 "!~N $my_gh_mon_thread"
+color index_subject brightwhite color45 "!~N $my_gh_mon_thread"
+
+# mentioned threads
+#
+color index brightwhite color91 "$my_gh_thread"
+color index_author brightwhite color91 "$my_gh_thread"
+color index_subject brightwhite color91 "$my_gh_thread"
+
+# change read messages part of a mention thread to a different color
+#
+color index brightwhite color93 "!~N $my_gh_thread"
+color index_author brightwhite color93 "!~N $my_gh_thread"
+color index_subject brightwhite color93 "!~N $my_gh_thread"
+
+# threads containing a merge, on which I'm participating
+#
+set my_gh_thread_merge = \
+  "$my_gh_sender $my_gh_modifiers ~b '[mM]erged.*into'"
+
+color index brightwhite color94 "$my_gh_thread_merge"
+color index_author brightwhite color94 "$my_gh_thread_merge"
+color index_subject brightwhite color94 "$my_gh_thread_merge"
+
+#color index brightwhite color68 \
+#  '~(=t "ceph@noreply.github.com")'
+#color index_author brightwhite color68 \
+#  '~(=t "ceph@noreply.github.com")'
+#color index_subject brightwhite color68 \
+#  '~(=t "ceph@noreply.github.com")'
+#

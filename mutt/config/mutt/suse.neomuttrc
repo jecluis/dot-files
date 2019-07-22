@@ -1,0 +1,19 @@
+# vim: ft=neomuttrc
+#
+
+color index_subject magenta default "~N ~s L3:"
+color index_subject brightgreen default '~N ~s "Bug" \
+  (~h "Component: RadosGW" | ~h "Component: Ceph")'
+
+color index_subject red default '~N ~s "L3" \
+  (~h "Component: RadosGW" | ~h "Component: Ceph")'
+
+#color index_subject brightred default '~N ~h "Assigned-To: jluis"'
+
+color index_subject brightred default \
+  '(~N ~h "Assigned-To: jluis" | (~s "needinfo" ~h "Type: request"))'
+
+color index_subject brightblack red \
+  '(~N ~s "L3" ~h "Assigned-To: jluis")'
+
+

@@ -1,0 +1,6 @@
+# vim: ft=neomuttrc
+#
+#
+
+subjectrx '^\[[cC]eph-[Qq][Aa]\] (.*) in teuthology-[0-9_:-]+-(.*)$' \
+  '[ceph-qa] %1 / %2'

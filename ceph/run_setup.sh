@@ -62,10 +62,10 @@ future, we may even set up repositories, remotes, the whole nine yards."
   # install scripts
   #
   info "installing ceph scripts"
-  scripts="ceph-do-cmake ceph-make ceph-vstart-kill ceph-ccache"
-  for s in $scripts; do
-    install_script ${cwd}/ceph/${s} ${s} || \
-      ( err "installing script ${s}" ; return 1 )
+  for s in ${cwd}/ceph/bin/*; do
+    script_name=$(basename ${s})
+    install_script ${s} ${script_name} || \
+      ( err "installing script ${script_name}" ; return 1 )
   done
 
   if check_installed_script_exists "local.do_cmake.sh"; then

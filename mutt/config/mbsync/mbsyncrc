@@ -50,27 +50,35 @@ MaxMessages 0
 # End profile
 
 
-IMAPStore gw-joao-suse-com-remote
-Host gwmail.emea.novell.com
-Port  993
-User jluis-gw
-PassCmd "pass mutt/joao-suse-com"
-SSLType IMAPS
-CertificateFile /etc/ssl/ca-bundle.pem
+#
+# Groupwise email has been essentially discontinued; it still holds emails up
+# to sometime in June, but no new email goes there - instead, things go to
+# the o365 account.
+# You should uncomment these lines if you wish to sync the groupwise email
+# account - however, be sure it still exists.
+#
 
-MaildirStore gw-joao-suse-com-local
-Subfolders Verbatim
-Path ~/.local/share/mail/gw-joao-suse-com/
-Inbox ~/.local/share/mail/gw-joao-suse-com/INBOX
-Flatten .
-
-Channel gw-joao-suse-com
-Expunge None
-Master :gw-joao-suse-com-remote:
-Slave :gw-joao-suse-com-local:
-Patterns * !"[Gmail]/All Mail"
-Create Both
-SyncState *
-MaxMessages 0
-# End profile
-
+#IMAPStore gw-joao-suse-com-remote
+#Host gwmail.emea.novell.com
+#Port  993
+#User jluis-gw
+#PassCmd "pass mutt/joao-suse-com"
+#SSLType IMAPS
+#CertificateFile /etc/ssl/ca-bundle.pem
+#
+#MaildirStore gw-joao-suse-com-local
+#Subfolders Verbatim
+#Path ~/.local/share/mail/gw-joao-suse-com/
+#Inbox ~/.local/share/mail/gw-joao-suse-com/INBOX
+#Flatten .
+#
+#Channel gw-joao-suse-com
+#Expunge None
+#Master :gw-joao-suse-com-remote:
+#Slave :gw-joao-suse-com-local:
+#Patterns * !"[Gmail]/All Mail"
+#Create Both
+#SyncState *
+#MaxMessages 0
+## End profile
+#

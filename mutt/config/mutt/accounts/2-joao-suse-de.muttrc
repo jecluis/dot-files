@@ -34,6 +34,7 @@ mailboxes \
   "=lists.upstream.ceph.devel" \
   "=lists.upstream.ceph.users" \
   "=lists.upstream.ceph.security" \
+  "=lists.upstream.ceph.github" \
   ="  "\
   ="-- internal -- "\
   "=lists.internal.ceph-bugs" \

@@ -34,18 +34,32 @@ set my_gh_thread = \
 # threads containing monitor keywords
 #
 
-set my_gh_mon_thread = \
-  "~( $my_gh_sender ~s "^[mM]on" )"
+#
+# touching monitor files
+#   this one has precedence over the monitor subjects, so we can highlight
+#   those which are focused on the monitors separately from those only
+#   casually modifying something on the monitors.
+#
+set my_gh_mon_touches_thread = \
+  "~( $my_gh_sender ~b 'src/mon/')
 
-color index brightblack color45 "$my_gh_mon_thread"
-color index_author brightblack color45 "$my_gh_mon_thread"
-color index_subject brightblack color45 "$my_gh_mon_thread"
+
+
+#
+# monitor in the message's subject
+#
+set my_gh_mon_thread = \
+  "~( $my_gh_sender !~s '[cC]ommon' ~s '[mM]on')"
+
+color index brightwhite color36 "$my_gh_mon_thread"
+color index_author brightwhite color36 "$my_gh_mon_thread"
+color index_subject brightwhite color36 "$my_gh_mon_thread"
 
 # change monitor threads' colors if message read
 #
-color index brightwhite color45 "!~N $my_gh_mon_thread"
-color index_author brightwhite color45 "!~N $my_gh_mon_thread"
-color index_subject brightwhite color45 "!~N $my_gh_mon_thread"
+color index brightblack color36 "!~N $my_gh_mon_thread"
+color index_author brightblack color36 "!~N $my_gh_mon_thread"
+color index_subject brightblack color36 "!~N $my_gh_mon_thread"
 
 # mentioned threads
 #

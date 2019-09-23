@@ -31,6 +31,9 @@ set username ""
 set password ""
 set passphrase ""
 
+set our_path $::env(PATH)
+puts "our path: $::env(PATH)"
+
 if { $is_userpass } {
   if { [catch {set username [exec pass show openvpn/$who/username]} msg] } {
     puts "expected username for '$who'; abort"

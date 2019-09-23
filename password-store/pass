@@ -27,6 +27,10 @@ else
 fi
 
 gpgdir=$(realpath -m ${PASSWORD_STORE_GPG_DIR:-${HOME}/.gnupg})
+if [[ -n "${PASSWORD_STORE_OVERRIDE_GPG_DIR}" ]]; then
+  gpgdir=$(realpath -m ${PASSWORD_STORE_OVERRIDE_GPG_DIR})
+fi
+
 if [[ ! -e "${gpgdir}" ]]; then
   err "specified GPG directory '${gpgdir}' does not exist"
   exit 1

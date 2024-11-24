@@ -4,6 +4,7 @@
 -- Discord: https://discord.com/invite/Xb9B4Ny
 
 -- lvim.log.level = "trace"
+-- lvim.lsp.null_ls.setup.debug = true
 
 lvim.plugins = {
   {
@@ -77,23 +78,36 @@ lvim.plugins = {
   },
   {
     "folke/trouble.nvim",
-    cmd = "TroubleToggle",
+    cmd = "Trouble",
+    opts = {
+      warn_no_results = false,
+      open_no_results = true,
+    },
+  },
+  {
+    "NeogitOrg/neogit",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "sindrets/diffview.nvim",
+      "nvim-telescope/telescope.nvim",
+    },
+    config = true,
   },
   -- { "hrsh7th/cmp-nvim-lsp-signature-help" },
 }
 
-
 lvim.builtin.nvimtree.active = false -- note: using neo-tree.nvim
-lvim.format_on_save = true
+lvim.format_on_save.enabled = true
+lvim.format_on_save.pattern = { "*.lua", "*.py", "*.md", "*.sh" }
 
 lvim.builtin.which_key.mappings["t"] = {
   name = "Diagnostics",
-  t = { "<cmd>TroubleToggle<cr>", "trouble" },
-  w = { "<cmd>TroubleToggle workspace_diagnostics<cr>", "workspace" },
-  d = { "<cmd>TroubleToggle document_diagnostics<cr>", "document" },
-  q = { "<cmd>TroubleToggle quickfix<cr>", "quickfix" },
-  l = { "<cmd>TroubleToggle loclist<cr>", "loclist" },
-  r = { "<cmd>TroubleToggle lsp_references<cr>", "references" },
+  t = { "<cmd>Trouble diagnostics toggle<cr>", "trouble" },
+  -- w = { "<cmd>Trouble diagnostics workspace_diagnostics<cr>", "workspace" },
+  -- d = { "<cmd>TroubleToggle document_diagnostics<cr>", "document" },
+  -- q = { "<cmd>TroubleToggle quickfix<cr>", "quickfix" },
+  l = { "<cmd>Trouble loclist toggle<cr>", "loclist" },
+  -- r = { "<cmd>TroubleToggle lsp_references<cr>", "references" },
 }
 
 local formatters = require "lvim.lsp.null-ls.formatters"
@@ -106,7 +120,31 @@ formatters.setup({
     name = "isort",
     filetypes = { "python" },
   },
+  {
+    name = "prettierd",
+    filetypes = { "markdown" },
+  },
+  {
+    name = "shfmt",
+    filetypes = { "sh", "bash" },
+    args = { "--simplify", "--indent", "2" },
+  }
 })
+
+local linters = require "lvim.lsp.null-ls.linters"
+linters.setup {
+  {
+    command = "markdownlint_cli2",
+    filetypes = { "markdown" },
+    args = { "$FILENAME" },
+    -- args = { "**/*.md" },
+  },
+  -- {
+  --   command = "shellcheck",
+  --   filetypes = { "sh" },
+  -- },
+}
+
 
 vim.list_extend(lvim.lsp.automatic_configuration.skipped_servers, { "pyright" })
 

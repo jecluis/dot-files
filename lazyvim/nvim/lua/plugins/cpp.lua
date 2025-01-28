@@ -41,13 +41,16 @@ return {
             offsetEncoding = { "utf-16" },
           },
           cmd = {
-            "clangd",
+            "/usr/bin/clangd",
             "--background-index",
             "--clang-tidy",
             "--header-insertion=iwyu",
             "--completion-style=detailed",
             "--function-arg-placeholders",
             "--fallback-style=llvm",
+            --            "--log=verbose",
+            --            "--pretty",
+            --            "--query-driver=/usr/bin/clang-*,/usr/bin/g++",
           },
           init_options = {
             usePlaceholders = true,
